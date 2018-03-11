@@ -20,14 +20,44 @@
     <h1>This is an HTML canvas</h1>
     <canvas id="asteroids" width="400" height="400"></canvas>
     <script>
-      import $ from 'jQuery'
-      var canvas = $("#asteroids");          // selects the canvas object
+      var canvas = document.getElementById("asteroids");          // selects the canvas object
       var context = canvas.getContext("2d"); // canvas context provides an API
-      context.strokeStyle = 'dimgrey';       // for drawing in 2d
+      context.strokeStyle = 'lightgrey';       // for drawing in 2d
       context.lineWidth = 5;                 // 'dimgrey' line 5px wide
-      context.rect(75, 75, 250, 250);        // these rules persist until
-overridden
+      context.rect(75, 50, canvas.width - 150, canvas.height - 100);   // these rules persist until overridden
       context.stroke();   // rect takes x, y, w, and h, stores but doesn't draw
+      context.fillStyle = 'dimgrey';
+      context.fill();
+      context.font = "34px Arial"; // text is treated the same way as shapes
+      context.strokeStyle = '#FF2222';
+      context.fillStyle = '#FFAAAA';
+      context.lineWidth = 0.75;
+      context.textAlign = "center"; // positions based on center point of text
+      let msg = "2D Drawing"
+      context.fillText(msg, canvas.width / 2, 100)
+      context.strokeText(msg, canvas.width / 2, 100) // takes a string and xy coords
+      // now here's a stick figure:
+      let msg2 = "it's quite easy";
+      context.font = "24px Arial";
+      context.fillText(msg2, canvas.width / 2, 330)
+      context.strokeText(msg2, canvas.width / 2, 330)
+      context.strokeStyle = '#FFF';
+      context.lineWidth = 2;
+      context.beginPath(); // starts a new path; would continue rect otherwise
+      context.arc(200, 140, 20, 0, Math.PI * 2); // x, y center, r, start + end
+      context.moveTo(200, 160); // body stick
+      context.lineTo(200, 220);
+      context.moveTo(180, 300); // left foot
+      context.lineTo(185, 260); // left knee
+      context.lineTo(200, 220); // groin
+      context.lineTo(215, 260); // right knee
+      context.lineTo(220, 300); // right foot
+      context.moveTo(240, 130); // right hand
+      context.lineTo(225, 170); // right elbow
+      context.lineTo(200, 170); // shoulder
+      context.lineTo(175, 180); // left elbow
+      context.lineTo(170, 220); // left hand
+      context.stroke();
     </script>         <!-- stroke tells context to draw the stored path -->
   </body>             <!-- using current values of context properties -->
 </html>
