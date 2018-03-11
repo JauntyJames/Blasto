@@ -1,0 +1,34 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>This is an HTML canvas</title>
+    <style media="screen">
+      body {
+        text-align: center;
+        font-family: sans-serif;
+      }
+      canvas {
+        background-color: black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>This is an HTML canvas</h1>
+    <canvas id="asteroids" width="400" height="400"></canvas>
+    <script>
+      import $ from 'jQuery'
+      var canvas = $("#asteroids");          // selects the canvas object
+      var context = canvas.getContext("2d"); // canvas context provides an API
+      context.strokeStyle = 'dimgrey';       // for drawing in 2d
+      context.lineWidth = 5;                 // 'dimgrey' line 5px wide
+      context.rect(75, 75, 250, 250);        // these rules persist until
+overridden
+      context.stroke();   // rect takes x, y, w, and h, stores but doesn't draw
+    </script>         <!-- stroke tells context to draw the stored path -->
+  </body>             <!-- using current values of context properties -->
+</html>
+
