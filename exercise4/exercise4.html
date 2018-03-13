@@ -19,16 +19,17 @@
       context.lineWidth = 0.5;
       context.strokeStyle = "white";
       draw_grid(context);
-      let x, y, angle = 0;
-      let w = context.canvas.width, h = context.canvas.height;
-      for(y = h/20; y < h; y += h/10) {
-        for (x = w/20; x < w; x += w/10) {
+      let c1 = 0, c2 = 0;
+      for(c1=0.1; c1<1; c1+=0.2) {
+        for(c2=0.1; c2<1; c2+=0.2) {
           context.save();
-          context.translate(x, y);
-          context.rotate(angle);
-          draw_ship(context, w/30, {guide: true, lineWidth: 1});
+          context.translate(context.canvas.width * c1, context.canvas.height *
+            c2)
+          context.rotate(-Math.PI/2);
+          draw_ship(context, context.canvas.width  / 12, { curve1: c1, curve2: c2,
+            guide: true})
           context.restore();
-          angle = (angle + 0.0075 * Math.PI)
+
         }
       }
     </script>
