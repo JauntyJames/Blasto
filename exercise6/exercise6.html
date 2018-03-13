@@ -1,0 +1,53 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Animation</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../drawing.js"></script>
+</head>
+
+<body>
+    <h1>Animation</h1>
+    <canvas id="asteroids" width="300" height="300"></canvas>
+    <script>
+      let context = document.getElementById("asteroids").getContext("2d");
+      context.strokeStyle = "white";
+      context.lineWidth = 1.5;
+      let x = 0, y = context.canvas.height / 5, radius = 20;
+      let xspeed = 1.5, yspeed = 0, gravity = 0.1;
+      let mouth = 0;
+
+      let frame = () => {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        draw(context);
+        update();
+      }
+      let update = () => {
+        x += xspeed;
+        y += yspeed;
+        yspeed += gravity;
+        if(y >= context.canvas.height - radius) {
+          y = context.canvas.height - radius;
+          yspeed *= -0.6;
+          xspeed *= 0.95;
+        }
+        if(x <= 0 || x >= context.canvas.width) {
+          x = (x + context.canvas.width) % context.canvas.width;
+        }
+        mouth = Math.abs(Math.sin(6 * Math.PI * x / context.canvas.width))
+      }
+      let draw = (ctx) => {
+        draw_grid(ctx);
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      }
+      setInterval(frame, 1000.0/60.0);
+    </script>
+</body>
+</html>
+
