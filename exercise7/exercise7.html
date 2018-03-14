@@ -18,20 +18,25 @@
   <script>
     let context = document.getElementById("asteroids").getContext("2d");
 
-    let asteroid = new Asteroid(24, 50, 0.2);
+    let asteroids = [
+      new Asteroid(24, 50, 0.2),
+      new Asteroid(24, 50, 0.5),
+      new Asteroid(5, 50, 0.2)
+    ];
 
-    for (let i = 0; i < asteroid.segments; i++) {
-      asteroid.shape.push(Math.random() - 0.5);
-    }
     let draw = (ctx, guide) => {
       if(guide) {
         draw_grid(ctx);
       }
-      asteroid.draw(ctx, guide);
+      asteroids.forEach((asteroid) => {
+        asteroid.draw(ctx, guide);
+      })
     }
 
     let update = (elapsed) => {
-      asteroid.update(elapsed);
+      asteroids.forEach((asteroid) => {
+        asteroid.update(elapsed);
+      })
     }
 
     let previous, elapsed;
