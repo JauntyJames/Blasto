@@ -41,10 +41,10 @@
       }
       let draw = (ctx) => {
         draw_grid(ctx);
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+        ctx.save();
+        ctx.translate(x, y);
+        draw_pacman(ctx, radius, mouth);
+        ctx.restore();
       }
       setInterval(frame, 1000.0/60.0);
     </script>

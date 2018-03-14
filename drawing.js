@@ -3,7 +3,7 @@ function draw_grid(ctx, minor, major, stroke, fill) {
   major = major || minor * 5;
   stroke = stroke || "#00FF00"
   fill = fill ||  "#009900"
-  ctx.save(); // saves canvas state variables like context.lineWidth
+  ctx.save(); // saves canvas state variables like ctx.lineWidth
   ctx.strokeStyle = stroke;
   ctx.fillStyle = fill;
   let width = ctx.canvas.width, height = ctx.canvas.height
@@ -26,16 +26,19 @@ function draw_grid(ctx, minor, major, stroke, fill) {
   ctx.restore(); // restores canvas variables to their state at start of func
 }
 
-function draw_pacman(context, x, y, radius, o) {
-  context.save();
-  context.beginPath();
-  context.arc(x, y, radius, (o * Math.PI * 0.2), -(o * Math.PI * 0.2));
-  context.lineTo(x, y);
-  context.fillStyle = "yellow";
-  context.fill();
-  context.closePath();
-  context.stroke();
-  context.restore();
+function draw_pacman(ctx, radius, mouth) {
+  angle = 0.2 * Math.PI * mouth;
+  ctx.save();
+  ctx.fillStyle = "yellow";
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, angle, -angle);
+  ctx.lineTo(0, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
 } 
 
 function draw_ship(ctx, radius, options) {
