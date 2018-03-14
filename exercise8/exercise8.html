@@ -24,13 +24,24 @@
   <script>
     let context = document.getElementById("pacman").getContext("2d");
     let pacman = new PacMan(150, 150, 20, 120);
-
+    let ghosts = [
+      new Ghost(Math.random() * 300, Math.random() * 300, 20, 70, 'red'),
+      new Ghost(Math.random() * 300, Math.random() * 300, 20, 70, 'pink'),
+      new Ghost(Math.random() * 300, Math.random() * 300, 20, 70, 'cyan'),
+      new Ghost(Math.random() * 300, Math.random() * 300, 20, 70, 'orange')
+    ]
     let draw = (ctx, guide) => {
       pacman.draw(ctx)
+      ghosts.forEach((ghost) => {
+        ghost.draw(context, guide)
+      })
     }
 
     let update = (elapsed) => {
       pacman.update(elapsed, 300, 300)
+      ghosts.forEach((ghost) => {
+        ghost.update(pacman, elapsed)
+      })
     }
 
     let previous, elapsed;

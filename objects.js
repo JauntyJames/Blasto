@@ -120,3 +120,30 @@ class PacMan {
     this.mouth = Math.abs(Math.sin(2 * Math.PI * this.time));
   }
 }
+
+class Ghost {
+  constructor(x, y, radius, speed, color) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.speed = speed;
+    this.color = color;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    draw_ghost(ctx, this.radius, {
+      fill: this.color
+    })
+    ctx.restore();
+  }
+
+  update(target, elapsed) {
+    var angle = Math.atan2(target.y - this.y, target.x - this.x)
+    var xSpeed = Math.cos(angle) * this.speed;
+    var ySpeed = Math.sin(angle) * this.speed;
+    this.x += xSpeed * elapsed;
+    this.y += ySpeed * elapsed;
+  }
+}

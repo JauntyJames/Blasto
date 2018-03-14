@@ -146,3 +146,38 @@ function draw_asteroid(ctx, radius, shape, options) {
   ctx.restore();
 }
 
+let draw_ghost = (ctx, radius, options) => {
+  options = options || {}
+  var feet = options.feet || 4;
+  var head_radius = radius * 0.8;
+  var foot_radius = head_radius / feet;
+  var eye_radius = head_radius / 3;
+  ctx.save();
+  ctx.strokeStyle = options.stroke || "white";
+  ctx.fillStyle = options.fill || "red";
+  ctx.lineWidth = options.lineWidth || radius * 0.05;
+  ctx.beginPath();
+  for (foot = 0; foot < feet; foot++) {
+    ctx.arc(
+      (2 * foot_radius * (feet - foot)) - head_radius - foot_radius,
+      radius - foot_radius,
+      foot_radius, 0, Math.PI
+    );
+  }
+  ctx.lineTo(-head_radius, radius - foot_radius)
+  ctx.arc(0, head_radius - radius, head_radius, Math.PI, 2 * Math.PI);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.fillStyle = 'white';
+  ctx.arc(-eye_radius * 1.1, -eye_radius, eye_radius, 0, Math.PI * 2)
+  ctx.arc(eye_radius * 1.1, -eye_radius, eye_radius, 0, Math.PI * 2)
+  ctx.fill();
+  ctx.beginPath();
+  ctx.fillStyle = 'black';
+  ctx.arc(-eye_radius * 1.1, -eye_radius, eye_radius / 3, 0, Math.PI * 2)
+  ctx.arc(eye_radius * 1.1, -eye_radius, eye_radius / 3, 0, Math.PI * 2)
+  ctx.fill();
+  ctx.restore();
+}
