@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Inheritance</title>
+
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../drawing.js"></script>
+    <script src="../objects.js"></script>
+        <!--[if lt IE 9]>
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js">
+        </script>
+        <![endif]-->
+
+</head>
+
+<body>
+  <h1>Inheritance</h1>  
+  <canvas id="asteroids" width="600" height="600"></canvas>
+  <script>
+    'use strict';
+    let context = document.getElementById("asteroids").getContext("2d");
+    let asteroids = [];
+    for (let i = 0; i < 4; i++) {
+      let asteroid = new Asteroid(
+        Math.random() * context.canvas.width,
+        Math.random() * context.canvas.height,
+        2000  + Math.random() * 8000
+      );
+      asteroid.push(Math.random() * 2 * Math.PI, 2000, 60)
+      asteroid.twist((Math.random() - 0.5) * 500, 60);
+      asteroids.push(asteroid)
+    }
+
+    let ship = new Ship(context.canvas.width / 2, context.canvas.height / 2);
+
+    let draw = () => {
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+      draw_grid(context);
+      asteroids.forEach((asteroid) => {
+        asteroid.draw(context)
+      })
+      ship.draw(context)
+    }
+
+    let update = (elapsed) => {
+      // if its nearly stopped, turn
+      if (Math.abs(ship.speed()) < 15) {
+        ship.angle += Math.PI * 2 * 0.01;
+      }
+      if (Math.abs(ship.speed()) > 300) {
+        ship.angle = ship.movementAngle() + Math.PI;
+      }
+      // push in the direction it's pointing
+      ship.push(ship.angle, 1000, elapsed)
+      asteroids.forEach((asteroid) => {
+        asteroid.update(elapsed, context)
+      })
+      ship.update(elapsed, context);
+    }
+
+    let previous;
+    let frame = (timestamp) => {
+      if (!previous) previous = timestamp;
+      let elapsed = timestamp - previous;
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+      update(elapsed/1000);
+      draw(context);
+      previous = timestamp;
+      window.requestAnimationFrame(frame);
+    }
+    window.requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
+

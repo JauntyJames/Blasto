@@ -1,36 +1,77 @@
-class Asteroid {
-  constructor(segments, radius, noise) {
-    this.x = context.canvas.width * Math.random();
-    this.y = context.canvas.height * Math.random();
-    this.angle = 0;
-    this.xSpeed = context.canvas.width * (Math.random() - 0.5);
-    this.ySpeed = context.canvas.height * (Math.random() - 0.5);
-    this.rotationSpeed = 2 * Math.PI * (Math.random() - 0.5);
-    this.radius = radius;
-    this.noise = noise;
-    this.shape = [];
-    for (let i = 0; i < segments; i++) {
-      this.shape.push(Math.random() - 0.5);
+class Mass {
+  constructor(x, y, mass, radius, angle, xSpeed, ySpeed, rotationSpeed) {
+    this.x = x;
+    this.y = y;
+    this.mass = mass || 1;
+    this.radius = radius || 50;
+    this.angle = angle || 0;
+    this.xSpeed = xSpeed || 0;
+    this.ySpeed = ySpeed || 0;
+    this.rotationSpeed = rotationSpeed || 0;
+  }
+
+  update(elapsed, ctx) {
+    this.x += this.xSpeed * elapsed;
+    this.y += this.ySpeed * elapsed;
+    this.angle += this.rotationSpeed * elapsed;
+    this.angle %= (2 * Math.PI);
+    if (this.x - this.radius > ctx.canvas.width) {
+      this.x = -this.radius;
+    }
+    if (this.x + this.radius < 0) {
+      this.x = ctx.canvas.width + this.radius;
+    }
+    if (this.y - this.radius > ctx.canvas.height) {
+      this.y = -this.radius;
+    }
+    if (this.y + this.radius < 0) {
+      this.y = ctx.canvas.height + this.radius;
     }
   }
 
+  push(angle, force, elapsed) {
+    this.xSpeed += elapsed * (Math.cos(angle) * force) / this.mass;
+    this.ySpeed += elapsed * (Math.sin(angle) * force) / this.mass;
+  }
 
-  update(elapsed) {
-    if (this.x - this.radius + elapsed * this.xSpeed > context.canvas.width) {
-      this.x = -this.radius;
+  twist(force, elapsed) {
+    this.rotationSpeed += elapsed * force / this.mass;
+  }
+
+  speed() {
+    return Math.sqrt(Math.pow(this.xSpeed, 2) + Math.pow(this.ySpeed, 2));
+  }
+
+  movementAngle() {
+    return Math.atan2(this.ySpeed, this.xSpeed);
+  }
+
+  draw(c) {
+    c.save();
+    c.translate(this.x, this.y)
+    c.rotate(this.angle);
+    c.beginPath();
+    c.arc(0, 0, this.radius, 0, 2 * Math.PI);
+    c.lineTo(0, 0);
+    c.strokeStyle = "#FFF";
+    c.stroke();
+    c.restore();
+  }
+}
+
+class Asteroid extends Mass {
+  constructor(mass, x, y, xSpeed, ySpeed, rotationSpeed) {
+    let density = 1; // kg per square pixel
+    let radius = Math.sqrt((mass / density) / Math.PI);
+    super(x, y, mass, radius, 0, xSpeed, ySpeed, rotationSpeed)
+    this.circumference = 2 * Math.PI * this.radius;
+    this.segments = Math.ceil(this.circumference / 15);
+    this.segemnts = Math.min(25, Math.max(5, this.segments));
+    this.noise = 0.2;
+    this.shape = [];
+    for (let i = 0; i < this.segments; i++) {
+      this.shape.push(Math.random() - 0.5);
     }
-    if (this.x + this.radius + elapsed * this.xSpeed < 0) {
-      this.x = context.canvas.width + this.radius;
-    }
-    if (this.y - this.radius + elapsed * this.ySpeed > context.canvas.height) {
-      this.y = -this.radius;
-    }
-    if (this.y + this.radius + elapsed * this.ySpeed < 0) {
-      this.y = context.canvas.height + this.radius;
-    }
-    this.x += elapsed * this.xSpeed;
-    this.y += elapsed * this.ySpeed;
-    this.angle = (this.angle + this.rotationSpeed * elapsed) % (2 * Math.PI)
   }
 
   draw(ctx, guide) {
@@ -42,6 +83,25 @@ class Asteroid {
       noise: this.noise
     })
     ctx.restore();
+  }
+}
+
+class Ship extends Mass {
+  constructor(x, y) {
+    super(x, y, 10, 20, 1.5 * Math.PI);
+  }
+
+  draw(c, guide) {
+    c.save();
+    c.translate(this.x, this.y);
+    c.rotate(this.angle);
+    c.strokeStyle = "white";
+    c.lineWidth - 2;
+    c.fillStyle - "black";
+    draw_ship(c, this.radius, {
+      guide: guide
+    })
+    c.restore();
   }
 }
 
@@ -147,3 +207,4 @@ class Ghost {
     this.y += ySpeed * elapsed;
   }
 }
+
