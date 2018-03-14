@@ -145,3 +145,4 @@ function draw_asteroid(ctx, radius, shape, options) {
   }
   ctx.restore();
 }
+
