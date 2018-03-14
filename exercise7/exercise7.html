@@ -1,0 +1,85 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Animation</title>
+    <meta name="description" content="content here">
+
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../drawing.js"></script>  
+</head>
+
+<body>
+  <h1>Animation</h1>
+  <canvas id="asteroids" width="300" height="300"></canvas>
+  <script>
+    let context = document.getElementById("asteroids").getContext("2d");
+
+    // asteroid shape
+    let segments = 24;
+    let shape = [];
+    for( let i = 0; i < segments; i++ ) {
+      shape.push(Math.random() - 0.5);
+    }
+    let radius = 50;
+    let noise = 0.2;
+
+    // asteroid state
+    let x = context.canvas.width * Math.random();
+    let y = context.canvas.height * Math.random();
+    let angle = 0;
+
+    // asteroid movement
+    let xSpeed = context.canvas.width * (Math.random() - 0.5);
+    let ySpeed = context.canvas.height * (Math.random() - 0.5);
+    let rotationSpeed = 2 * Math.PI * (Math.random() - 0.5)
+
+    let draw = (ctx, guide) => {
+      if (guide) {
+        draw_grid(ctx)
+      }
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      draw_asteroid(ctx, radius, shape, {
+        guide: guide,
+        noise: noise,
+      })
+      ctx.restore();
+    }
+
+    let update = (elapsed) => {
+      if (x - radius + elapsed * xSpeed > context.canvas.width) {
+        x = -radius;
+      }
+      if (x + radius + elapsed * xSpeed < 0) {
+        x = context.canvas.width + radius;
+      } 
+      if (y - radius + elapsed * ySpeed > context.canvas.height) {
+        y = -radius
+      }
+      if (y + radius + elapsed * ySpeed < 0) {
+        y = context.canvas.height + radius;
+      }
+      x += elapsed * xSpeed
+      y += elapsed * ySpeed
+      angle = (angle + elapsed * rotationSpeed)
+    }
+
+    let previous, elapsed;
+    let frame = (timestamp) => {
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+      if (!previous) previous = timestamp;
+      elapsed = timestamp - previous;
+      update(elapsed / 1000);
+      draw(context, true);
+      previous = timestamp;
+      window.requestAnimationFrame(frame);
+    }
+    window.requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
+
