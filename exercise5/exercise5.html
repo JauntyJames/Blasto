@@ -31,7 +31,7 @@
       }
       for(let y=0.1; y<1; y+=0.2) {
         for(let x=0.1; x<1; x+=0.2) {
-          context.save();
+          ontext.save();
           context.translate(context.canvas.width * x, context.canvas.height * y);
           draw_asteroid(context, context.canvas.width / 12, shape, {guide:
             true, noise: noise})
