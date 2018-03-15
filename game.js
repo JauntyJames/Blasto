@@ -40,6 +40,7 @@ class AsteroidsGame {
     this.gameOver = false;
     this.message = new Message(this.canvas.width / 2, this.canvas.height * 0.4)
     window.requestAnimationFrame(this.frame.bind(this));
+    this.resetGame();
   }
 
   movingAsteroid(elapsed) {
@@ -91,7 +92,11 @@ class AsteroidsGame {
         break;
       case " ":
       case 32:
-        this.ship.trigger = value;
+        if (this.gameOver) {
+          this.resetGame();
+        } else {
+          this.ship.trigger = value;
+        }
         break;
       case "g":
       case 71:
@@ -186,5 +191,19 @@ class AsteroidsGame {
     }, this);
     this.healthIndicator.draw(this.c, this.ship.health, this.ship.maxHealth);
     this.scoreIndicator.draw(this.c, this.score);
+  }
+
+  resetGame() {
+    this.gameOver = false;
+    this.score = 0;
+    this.ship = new Ship(
+      this.canvas.width / 2,
+      this.canvas.height / 2,
+      1000,
+      200
+    );
+    this.projectiles = [];
+    this.asteroids = [];
+    this.asteroids.push(this.movingAsteroid());
   }
 }
