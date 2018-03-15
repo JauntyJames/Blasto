@@ -74,6 +74,17 @@ class Asteroid extends Mass {
     }
   }
 
+  child(mass) {
+    return new Asteroid(
+      mass,
+      this.x,
+      this.y,
+      this.xSpeed,
+      this.ySpeed,
+      this.rotationSpeed
+    )
+  }
+
   draw(ctx, guide) {
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -306,6 +317,31 @@ class Indicator {
     c.beginPath();
     c.rect(offset + this.x, this.y, this.width * (max / level), this.height)
     c.fill();
+    c.restore();
+  }
+}
+
+class NumberIndicator {
+  constructor(label, x, y, options) {
+    options = options || {};
+    this.label = `${label}: `;
+    this.x = x;
+    this.y = y;
+    this.digits = options.digits || 0;
+    this.pt = options.pt || 10;
+    this.align = options.align || 'end';
+  }
+
+  draw(c, value) {
+    c.save();
+    c.fillStyle = "white";
+    c.font = `${this.pt}pt Arial`;
+    c.textAlign = this.align;
+    c.fillText(
+      this.label + value.toFixed(this.digits),
+      this.x,
+      this.y + this.pt -1
+    );
     c.restore();
   }
 }

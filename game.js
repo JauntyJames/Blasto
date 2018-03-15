@@ -30,6 +30,13 @@ class AsteroidsGame {
     this.healthIndicator = new Indicator("health", 5, 5, 100, 10)
     this.massDestroyed = 500;
     this.score = 0;
+    this.scoreIndicator = new NumberIndicator("score", this.canvas.width - 10, 5);
+    this.fpsIndicator = new NumberIndicator(
+      "fps", 
+      this.canvas.width - 10,
+      this.canvas.height - 15,
+      {digits: 2}
+    )
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
@@ -97,6 +104,7 @@ class AsteroidsGame {
   frame(timestamp) {
     if (!this.previous) this.previous = timestamp;
     let elapsed = timestamp - this.previous;
+    this.fps = 1000 / elapsed;
     this.update(elapsed / 1000);
     this.draw();
     this.previous = timestamp;
@@ -131,13 +139,33 @@ class AsteroidsGame {
     }
   }
 
+  splitAsteroid(asteroid, elapsed) {
+    asteroid.mass -= this.massDestroyed;
+    this.score += this.massDestroyed;
+    let split = 0.25 + 0.5 * Math.random(); // split unevenly
+    let ch1 = asteroid.child(asteroid.mass * split);
+    let ch2 = asteroid.child(asteroid.mass * (1 - split));
+    [ch1, ch2].forEach((child) => {
+      if (child.mass < this.massDestroyed) {
+        this.score += child.mass;
+      } else {
+        this.pushAsteroid(child, elapsed);
+        this.asteroids.push(child)
+      }
+    }, this)
+  }
+
   draw() {
     this.c.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.guide) {
       draw_grid(this.c);
       this.asteroids.forEach((a) => {
         drawLine(this.c, a, this.ship);
+        this.projectiles.forEach((p) => {
+          drawLine(this.c, asteroid, p);
+        }, this);
       }, this);
+      this.fpsIndicator.draw(this.c, this.fps)
     }
     this.asteroids.forEach((a) => {
       a.draw(this.c, this.guide);
@@ -147,5 +175,6 @@ class AsteroidsGame {
       p.draw(this.c);
     }, this);
     this.healthIndicator.draw(this.c, this.ship.health, this.ship.maxHealth);
+    this.scoreIndicator.draw(this.c, this.score);
   }
 }
