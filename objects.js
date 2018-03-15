@@ -87,21 +87,52 @@ class Asteroid extends Mass {
 }
 
 class Ship extends Mass {
-  constructor(x, y) {
+  constructor(x, y, power, weaponPower) {
     super(x, y, 10, 20, 1.5 * Math.PI);
+    this.thrusterPower = power;
+    this.steeringPower = power / 20;
+    this.rightThruster = false;
+    this.leftThruster = false;
+    this.thrusterOn = false;
+    this.weaponPower = weaponPower || 200;
+    this.loaded = false;
+    this.weaponReloadTime = 0.25;
+    this.timeUntilReload = this.weaponReloadTime;
+  }
+
+  update(elapsed, c) {
+    this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
+    this.twist((this.rightThruster - this.leftThruster) * this.steeringPower, elapsed);
+    this.loaded = this.timeUntilReload === 0;
+    if (!this.loaded) {
+      this.timeUntilReload -= Math.min(elapsed, this.timeUntilReload);
+    }
+    super.update.apply(this, arguments);
   }
 
   draw(c, guide) {
     c.save();
     c.translate(this.x, this.y);
     c.rotate(this.angle);
-    c.strokeStyle = "white";
-    c.lineWidth - 2;
-    c.fillStyle - "black";
     draw_ship(c, this.radius, {
-      guide: guide
+      guide: guide,
+      thruster: this.thrusterOn
     })
     c.restore();
+  }
+
+  projectile(elapsed) {
+    let p = new Projectile(0.025, 1,
+      this.x + Math.cos(this.angle) * this.radius,
+      this.y + Math.sin(this.angle) * this.radius,
+      this.xSpeed,
+      this.ySpeed,
+      this.rotationSpeed
+    )
+    p.push(this.angle, this.weaponPower, elapsed);
+    this.push(this.angle + Math.PI, this.weaponPower, elapsed);
+    this.timeUntilReload = this.weaponReloadTime;
+    return p;
   }
 }
 
@@ -153,15 +184,6 @@ class PacMan {
   }
 
   update(elapsed, width, height) {
-    // an average of once per 100 frames
-    if (Math.random() <= 0.01) {
-      if (Math.random() < 0.5) {
-        this.turnLeft();
-      } else {
-        this.turnRight();
-      }
-    }
-
     if (this.x - this.radius + elapsed * this.xSpeed > width) {
       this.x = -this.radius;
     }
@@ -178,6 +200,30 @@ class PacMan {
     this.y += this.ySpeed * elapsed;
     this.time += elapsed;
     this.mouth = Math.abs(Math.sin(2 * Math.PI * this.time));
+  }
+
+  moveRight() {
+    this.xSpeed = this.speed;
+    this.ySpeed = 0;
+    this.angle = 0;
+  }
+
+  moveDown() {
+    this.xSpeed = 0;
+    this.ySpeed = this.speed;
+    this.angle = 0.5 * Math.PI
+  }
+
+  moveLeft() {
+    this.xSpeed = -this.speed;
+    this.ySpeed = 0;
+    this.angle = Math.PI;
+  }
+
+  moveUp() {
+    this.xSpeed = 0;
+    this.ySpeed = -this.speed;
+    this.angle = 1.5 * Math.PI;
   }
 }
 
@@ -208,3 +254,17 @@ class Ghost {
   }
 }
 
+class Projectile extends Mass {
+  constructor(mass, lifetime, x, y, xSpeed, ySpeed, rotationSpeed) {
+    let density = 0.001
+    let radius = Math.sqrt((mass / density) / Math.PI);
+    super(x, y, mass, radius, 0, xSpeed, ySpeed, rotationSpeed);
+    this.lifetime = lifetime;
+    this.life = 1.0;
+  }
+
+  update(elapsed, c) {
+    this.life -= (elapsed / this.lifetime);
+    super.update.apply(this, arguments);
+  }
+}
