@@ -37,6 +37,8 @@ class AsteroidsGame {
       this.canvas.height - 15,
       {digits: 2}
     )
+    this.gameOver = false;
+    this.message = new Message(this.canvas.width / 2, this.canvas.height * 0.4)
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
@@ -119,6 +121,10 @@ class AsteroidsGame {
         this.ship.compromised = true;
       }
     }, this);
+    if (this.ship.health <= 0) {
+      this.gameOver = true;
+      return;
+    }
     this.ship.update(elapsed, this.c);
     this.projectiles.forEach((p, i, projectiles) => {
       p.update(elapsed, this.c);
@@ -170,6 +176,10 @@ class AsteroidsGame {
     this.asteroids.forEach((a) => {
       a.draw(this.c, this.guide);
     }, this);
+    if (this.gameOver) {
+      this.message.draw(this.c, "GAME OVER", "Press space to play again")
+      return;
+    }
     this.ship.draw(this.c, this.guide);
     this.projectiles.forEach((p) => {
       p.draw(this.c);

@@ -345,3 +345,26 @@ class NumberIndicator {
     c.restore();
   }
 }
+
+class Message {
+  constructor(x, y, options) {
+    options = options || {};
+    this.x = x;
+    this.y = y;
+    this.mainPt = options.mainPt || 28;
+    this.supPt = options.subPt || 18;
+    this.fill = options.fill || "white";
+    this.textAlign = options.align || 'center';
+  }
+
+  draw(c, main, sub) {
+    c.save();
+    c.fillStyle = this.fill;
+    c.textAlign = this.textAlign;
+    c.font = `${this.mainPt}pt Arial`;
+    c.fillText(main, this.x, this.y);
+    c.font = `${this.subPt}pt Arial`;
+    c.fillText(sub, this.x, this.y + this.mainPt);
+    c.restore();
+  }
+}
