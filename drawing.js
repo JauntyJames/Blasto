@@ -47,6 +47,24 @@ function draw_ship(ctx, radius, options) {
   let curve1 = options.curve1 || 0.25;
   let curve2 = options.curve2 || 0.75;
   ctx.save();
+  if (options.thruster) {
+    ctx.save();
+    ctx.strokeStyle = "yellow";
+    ctx.fillStyle = "red";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(
+      Math.cos(Math.PI + angle * 0.8) * radius / 2,
+      Math.sin(Math.PI + angle * 0.8) * radius / 2
+    )
+    ctx.quadraticCurveTo(-radius * 2, 0,
+      Math.cos(Math.PI - angle * 0.8) * radius / 2,
+      Math.sin(Math.PI - angle * 0.8) * radius / 2
+    )
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
   if (options.guide) {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
@@ -144,6 +162,7 @@ function draw_asteroid(ctx, radius, shape, options) {
     ctx.stroke();
   }
   ctx.restore();
+  
 }
 
 let draw_ghost = (ctx, radius, options) => {
@@ -178,6 +197,15 @@ let draw_ghost = (ctx, radius, options) => {
   ctx.fillStyle = 'black';
   ctx.arc(-eye_radius * 1.1, -eye_radius, eye_radius / 3, 0, Math.PI * 2)
   ctx.arc(eye_radius * 1.1, -eye_radius, eye_radius / 3, 0, Math.PI * 2)
+  ctx.fill();
+  ctx.restore();
+}
+
+let draw_projectile = (ctx, radius, lifetime) => {
+  ctx.save();
+  cts.fillStyle = "rgb(100%, 100%, " + (100 * lifetime) + "%)";
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
