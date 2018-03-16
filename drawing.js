@@ -209,3 +209,14 @@ let draw_projectile = (ctx, radius, lifetime) => {
   ctx.fill();
   ctx.restore();
 }
+
+let drawLine = (ctx, obj1, obj2) => {
+  ctx.save();
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(obj1.x, obj1.y);
+  ctx.lineTo(obj2.x, obj2.y);
+  ctx.stroke();
+  ctx.restore();
+}

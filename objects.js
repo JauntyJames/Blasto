@@ -74,6 +74,17 @@ class Asteroid extends Mass {
     }
   }
 
+  child(mass) {
+    return new Asteroid(
+      mass,
+      this.x,
+      this.y,
+      this.xSpeed,
+      this.ySpeed,
+      this.rotationSpeed
+    )
+  }
+
   draw(ctx, guide) {
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -94,18 +105,25 @@ class Ship extends Mass {
     this.rightThruster = false;
     this.leftThruster = false;
     this.thrusterOn = false;
+    this.retroOn = false;
     this.weaponPower = weaponPower || 200;
     this.loaded = false;
     this.weaponReloadTime = 0.25;
     this.timeUntilReload = this.weaponReloadTime;
+    this.compromised = false;
+    this.maxHealth = 2.0;
+    this.health = this.maxHealth;
   }
 
   update(elapsed, c) {
-    this.push(this.angle, this.thrusterOn * this.thrusterPower, elapsed);
+    this.push(this.angle, (this.thrusterOn - this.retroOn) * this.thrusterPower, elapsed);
     this.twist((this.rightThruster - this.leftThruster) * this.steeringPower, elapsed);
     this.loaded = this.timeUntilReload === 0;
     if (!this.loaded) {
       this.timeUntilReload -= Math.min(elapsed, this.timeUntilReload);
+    }
+    if (this.compromised) {
+      this.health -= Math.min(elapsed, this.health);
     }
     super.update.apply(this, arguments);
   }
@@ -114,6 +132,14 @@ class Ship extends Mass {
     c.save();
     c.translate(this.x, this.y);
     c.rotate(this.angle);
+    if (guide && this.compromised) {
+      c.save();
+      c.fillStyle = "red"
+      c.beginPath();
+      c.arc(0, 0, this.radius, 0, 2 * Math.PI);
+      c.fill();
+      c.restore();
+    }
     draw_ship(c, this.radius, {
       guide: guide,
       thruster: this.thrusterOn
@@ -266,5 +292,79 @@ class Projectile extends Mass {
   update(elapsed, c) {
     this.life -= (elapsed / this.lifetime);
     super.update.apply(this, arguments);
+  }
+}
+
+class Indicator {
+  constructor(label, x, y, width, height) {
+    this.label = `${label}: `;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  draw(c, max, level) {
+    c.save();
+    c.strokeStyle = "white";
+    c.fillStyle = "white";
+    c.font = `${this.height}pt Arial`
+    let offset = c.measureText(this.label).width;
+    c.fillText(this.label, this.x, this.y + this.height - 1);
+    c.beginPath();
+    c.rect(offset + this.x, this.y, this.width, this.height);
+    c.stroke();
+    c.beginPath();
+    c.rect(offset + this.x, this.y, this.width * (max / level), this.height)
+    c.fill();
+    c.restore();
+  }
+}
+
+class NumberIndicator {
+  constructor(label, x, y, options) {
+    options = options || {};
+    this.label = `${label}: `;
+    this.x = x;
+    this.y = y;
+    this.digits = options.digits || 0;
+    this.pt = options.pt || 10;
+    this.align = options.align || 'end';
+  }
+
+  draw(c, value) {
+    c.save();
+    c.fillStyle = "white";
+    c.font = `${this.pt}pt Arial`;
+    c.textAlign = this.align;
+    c.fillText(
+      this.label + value.toFixed(this.digits),
+      this.x,
+      this.y + this.pt -1
+    );
+    c.restore();
+  }
+}
+
+class Message {
+  constructor(x, y, options) {
+    options = options || {};
+    this.x = x;
+    this.y = y;
+    this.mainPt = options.mainPt || 28;
+    this.supPt = options.subPt || 18;
+    this.fill = options.fill || "white";
+    this.textAlign = options.align || 'center';
+  }
+
+  draw(c, main, sub) {
+    c.save();
+    c.fillStyle = this.fill;
+    c.textAlign = this.textAlign;
+    c.font = `${this.mainPt}pt Arial`;
+    c.fillText(main, this.x, this.y);
+    c.font = `${this.subPt}pt Arial`;
+    c.fillText(sub, this.x, this.y + this.mainPt);
+    c.restore();
   }
 }
