@@ -39,6 +39,10 @@ class AsteroidsGame {
     )
     this.gameOver = false;
     this.message = new Message(this.canvas.width / 2, this.canvas.height * 0.4)
+    this.level = 1;
+    this.levelIndicator = new NumberIndicator("level", this.canvas.width / 2, 5, {
+      align: "center"
+    })
     window.requestAnimationFrame(this.frame.bind(this));
     this.resetGame();
   }
@@ -53,7 +57,9 @@ class AsteroidsGame {
     return new Asteroid(
       this.asteroidMass,
       this.canvas.width * Math.random(),
-      this.canvas.height * Math.random()
+      this.canvas.height * Math.random(),
+      Math.random() * 100 * this.level,
+      Math.random() * 100 * this.level
     )
   }
 
@@ -148,6 +154,16 @@ class AsteroidsGame {
     if (this.ship.trigger && this.ship.loaded) {
       this.projectiles.push(this.ship.projectile(elapsed));
     }
+    if (this.asteroids.length === 0) {
+      this.levelUp();
+    }
+  }
+
+  levelUp() {
+    this.level += 1;
+    for (var i = 0; i < this.level; i++) {
+      this.asteroids.push(this.movingAsteroid())
+    }
   }
 
   splitAsteroid(asteroid, elapsed) {
@@ -173,7 +189,7 @@ class AsteroidsGame {
       this.asteroids.forEach((a) => {
         drawLine(this.c, a, this.ship);
         this.projectiles.forEach((p) => {
-          drawLine(this.c, asteroid, p);
+          drawLine(this.c, a, p);
         }, this);
       }, this);
       this.fpsIndicator.draw(this.c, this.fps)
@@ -191,9 +207,11 @@ class AsteroidsGame {
     }, this);
     this.healthIndicator.draw(this.c, this.ship.health, this.ship.maxHealth);
     this.scoreIndicator.draw(this.c, this.score);
+    this.levelIndicator.draw(this.c, this.level);
   }
 
   resetGame() {
+    this.level = 0;
     this.gameOver = false;
     this.score = 0;
     this.ship = new Ship(
@@ -205,5 +223,6 @@ class AsteroidsGame {
     this.projectiles = [];
     this.asteroids = [];
     this.asteroids.push(this.movingAsteroid());
+    this.levelUp();
   }
 }
