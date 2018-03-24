@@ -1,0 +1,23 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Blasto!</title>
+    <meta name="Blasto" content="Asteroids Clone">
+    <%= javascript_include_tag "application" %>
+    <%= stylesheet_link_tag "application", media: "all" %>
+</head>
+
+  <body>
+    <h1>Blasto!</h1>
+    <canvas id="asteroids" height="600" width="600" tabindex="1"></canvas>
+    <script>
+      'use strict';
+      let game = new AsteroidsGame("asteroids");
+    </script>
+    <!--<script src="js/scripts.js"></script>-->
+  </body>
+</html>
+
